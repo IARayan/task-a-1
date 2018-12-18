@@ -1,4 +1,4 @@
-#board {
+#game {
     width: 302px;
     margin: 0 auto;
     border: 1px solid #000;
@@ -8,14 +8,17 @@
     font-size: 50px;
     background-color: #666;
     grid-gap: 1px;
+    box-sizing: content-box;
 }
-
-#board.locked {
+.modal {
+    width: 80%;
+}
+#game.locked {
     opacity: .7;
     pointer-events: none;
 }
 
-#board .square {
+#game .square {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,14 +26,17 @@
     cursor: pointer;
 }
 
-#board .square.checked {
+#game .square.checked {
     cursor: default;
 }
 
-#board .square.winner {
-    background-color: #ffa1a1;
+#game .square.winner {
+    background-color: #caffc0;
 }
 
 input[type=button] {
     margin-top: 20px;
+}
+h3{
+    text-align: center;
 }

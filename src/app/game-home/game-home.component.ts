@@ -7,16 +7,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameHomeComponent implements OnInit {
 
- 
+ startDate=new Date().getTime();
+ statistic={
+   player:{win:0,loss:0,draw:0},
+   cpu:{win:0,loss:0,draw:0},
+   time:"0"
+ };
+ endDate=new Date().getTime();
+
   PLAYER_COMPUTER = { name: 'Computer', symbol: 'o' };
-  PLAYER_HUMAN = { name: 'You', symbol: 'x' };
+  PLAYER_A = { name: 'You', symbol: 'x' };
   DRAW = { name: 'Draw' };
 
   board: any[];
-  currentPlayer = this.PLAYER_HUMAN;
+  currentPlayer = this.PLAYER_A;
   lastWinner: any;
   gameOver: boolean;
-  boardLocked: boolean;
+  gameLocked: boolean;
 
   constructor() { }
 
@@ -26,29 +33,54 @@ export class GameHomeComponent implements OnInit {
 
   square_click(square) {
     if(square.value === '' && !this.gameOver) {
-      square.value = this.PLAYER_HUMAN.symbol;
-      this.completeMove(this.PLAYER_HUMAN);
+      square.value = this.PLAYER_A.symbol;
+      this.completeMove(this.PLAYER_A);
     }
   }
 
   computerMove(firstMove: boolean = false) {
-    this.boardLocked = true;
+    this.gameLocked = true;
 
     setTimeout(() => {
       let square = firstMove ? this.board[4] : this.getRandomAvailableSquare();
       square.value = this.PLAYER_COMPUTER.symbol;
       this.completeMove(this.PLAYER_COMPUTER);
-      this.boardLocked = false;
+      this.gameLocked = false;
     }, 600);
   }
+calculateTime(){
+  this.endDate=new Date().getTime();
 
+  var msg = this.timeInMinAndSec(this.endDate-this.startDate);
+  this.statistic.time=msg;
+  console.log(this.statistic);
+}
   completeMove(player) {
     if(this.isWinner(player.symbol))
-      this.showGameOver(player);
+     { this.showGameOver(player);
+    console.log(player)
+    if(player.symbol=="o"){
+      this.statistic.cpu.win++;
+      this.statistic.player.loss++;
+     this.calculateTime();
+    }
+    if(player.symbol=="x"){
+      this.statistic.player.win++;
+      this.statistic.cpu.loss++;
+      this.calculateTime();
+
+    }
+    }
     else if(!this.availableSquaresExist())
-      this.showGameOver(this.DRAW);
-    else {
-      this.currentPlayer = (this.currentPlayer == this.PLAYER_COMPUTER ? this.PLAYER_HUMAN : this.PLAYER_COMPUTER);
+{      this.showGameOver(this.DRAW);
+  console.log(this.statistic);
+  this.statistic.player.draw++;
+  this.statistic.cpu.draw++;
+  this.calculateTime();
+
+
+}    else {
+      this.currentPlayer = (this.currentPlayer == this.PLAYER_COMPUTER ? this.PLAYER_A : this.PLAYER_COMPUTER);
 
       if(this.currentPlayer == this.PLAYER_COMPUTER)
         this.computerMove();
@@ -76,14 +108,14 @@ export class GameHomeComponent implements OnInit {
 
   get winningIndexes(): any[] {
     return [
-      [0, 1, 2],  //top row
-      [3, 4, 5],  //middle row
-      [6, 7, 8],  //bottom row
-      [0, 3, 6],  //first col
-      [1, 4, 7],  //second col
-      [2, 5, 8],  //third col
-      [0, 4, 8],  //first diagonal
-      [2, 4, 6]   //second diagonal
+      [0, 1, 2],  //top winner row
+      [3, 4, 5],  //middle winner row
+      [6, 7, 8],  //bottom winner row
+      [0, 3, 6],  //first winner col
+      [1, 4, 7],  //second winner col
+      [2, 5, 8],  //third winner col
+      [0, 4, 8],  //first winner diagonal
+      [2, 4, 6]   //second winner diagonal
     ];
   }
 
@@ -113,15 +145,23 @@ export class GameHomeComponent implements OnInit {
     ];
 
     this.gameOver = false;
-    this.boardLocked = false;
+    this.gameLocked = false;
 
     if(this.currentPlayer == this.PLAYER_COMPUTER){
-      this.boardLocked = true;
+      this.gameLocked = true;
       this.computerMove(true);
     }
+
+
   }
 
   getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
   }
+  timeInMinAndSec(millis) {
+    var minutes = Math.floor(millis / 60000);
+    var seconds:any = ((millis % 60000) / 1000).toFixed(0);
+    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+  }
+
 }
